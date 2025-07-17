@@ -231,5 +231,56 @@
   </footer>
 
   <script src="chat.js"></script>
+  <script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('username-modal');
+    const input = document.getElementById('username-input');
+    const sendButton = document.getElementById('send-button');
+    const chatBox = document.getElementById('chat-messages');
+    const typing = document.getElementById('typing-indicator');
+    const messageInput = document.getElementById('user-input');
+
+    let username = localStorage.getItem('username');
+
+    if (!username) {
+      modal.style.display = 'flex';
+    }
+
+    window.saveUsername = function () {
+      const name = input.value.trim();
+      if (name) {
+        localStorage.setItem('username', name);
+        username = name;
+        modal.style.display = 'none';
+      } else {
+        input.style.borderColor = 'red';
+      }
+    };
+
+    sendButton.addEventListener('click', () => {
+      const msg = messageInput.value.trim();
+      if (!msg || !username) return;
+
+      const userMsg = document.createElement('div');
+      userMsg.classList.add('message', 'user-message');
+      userMsg.innerHTML = `<strong>${username}:</strong> ${msg}`;
+      chatBox.appendChild(userMsg);
+      messageInput.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      typing.classList.add('visible');
+      setTimeout(() => {
+        typing.classList.remove('visible');
+        const botReply = document.createElement('div');
+        botReply.classList.add('message', 'assistant-message');
+        botReply.innerHTML = `<p>I heard you, ${username}.</p>`;
+        chatBox.appendChild(botReply);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }, 1000);
+    });
+  });
+</script>
+
 </body>
 </html>
+
