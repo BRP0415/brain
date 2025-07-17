@@ -19,14 +19,7 @@ let chatHistory = [
     role: "system",
     content: `The user talking to you is named ${username}. Refer to them by their name when appropriate.`,
   },
-  {
-    role: "assistant",
-    content: `Hello, ${username}! I'm an LLM chat app powered by Cloudflare Workers AI. How can I help you today?`,
-  },
 ];
-
-// Show initial assistant message
-addMessageToChat("assistant", chatHistory[1].content);
 
 // Auto-resize textarea as user types
 userInput.addEventListener("input", function () {
