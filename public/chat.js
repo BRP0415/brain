@@ -149,57 +149,5 @@ function addMessageToChat(role, content) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-<script>
-  let username = localStorage.getItem('username');
 
-  function saveUsername() {
-    const input = document.getElementById('username-input');
-    const name = input.value.trim();
-
-    if (name) {
-      localStorage.setItem('username', name);
-      username = name;
-      document.getElementById('username-modal').style.display = 'none';
-    } else {
-      input.style.borderColor = 'red';
-    }
-  }
-
-  // Check if username is set
-  window.onload = () => {
-    if (!username) {
-      document.getElementById('username-modal').style.display = 'flex';
-    } else {
-      document.getElementById('username-modal').style.display = 'none';
-    }
-
-    document.getElementById('send-button').addEventListener('click', sendMessage);
-  };
-
-  function sendMessage() {
-    const input = document.getElementById('user-input');
-    const msg = input.value.trim();
-    if (!msg) return;
-
-    const chatBox = document.getElementById('chat-messages');
-    const userMsg = document.createElement('div');
-    userMsg.classList.add('message', 'user-message');
-    userMsg.innerHTML = `<strong>${username}:</strong> ${msg}`;
-    chatBox.appendChild(userMsg);
-    input.value = '';
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    // Simulate assistant reply (optional)
-    const typing = document.getElementById('typing-indicator');
-    typing.classList.add('visible');
-    setTimeout(() => {
-      typing.classList.remove('visible');
-      const botReply = document.createElement('div');
-      botReply.classList.add('message', 'assistant-message');
-      botReply.innerHTML = `<p>I heard you, ${username}.</p>`;
-      chatBox.appendChild(botReply);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }, 1000);
-  }
-</script>
 
