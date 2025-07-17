@@ -10,15 +10,23 @@ const userInput = document.getElementById("user-input");
 const sendButton = document.getElementById("send-button");
 const typingIndicator = document.getElementById("typing-indicator");
 
-// Chat state
+// Load username from localStorage (fallback to "User")
+let username = localStorage.getItem("username") || "User";
+
+// Chat state with system message to give AI context
 let chatHistory = [
   {
+    role: "system",
+    content: `The user talking to you is named ${username}. Refer to them by their name when appropriate.`,
+  },
+  {
     role: "assistant",
-    content:
-      "Hello! I'm an LLM chat app powered by Cloudflare Workers AI. How can I help you today?",
+    content: `Hello, ${username}! I'm an LLM chat app powered by Cloudflare Workers AI. How can I help you today?`,
   },
 ];
-let isProcessing = false;
+
+// Show initial assistant message
+addMessageToChat("assistant", chatHistory[1].content);
 
 // Auto-resize textarea as user types
 userInput.addEventListener("input", function () {
@@ -37,6 +45,9 @@ userInput.addEventListener("keydown", function (e) {
 // Send button click handler
 sendButton.addEventListener("click", sendMessage);
 
+// Controls whether the assistant is currently processing a message
+let isProcessing = false;
+
 /**
  * Sends a message to the chat API and processes the response
  */
@@ -51,8 +62,8 @@ async function sendMessage() {
   userInput.disabled = true;
   sendButton.disabled = true;
 
-  // Add user message to chat
-  addMessageToChat("user", message);
+  // Add user message to chat with their name
+  addMessageToChat("user", `<strong>${username}:</strong> ${message}`);
 
   // Clear input
   userInput.value = "";
@@ -61,20 +72,18 @@ async function sendMessage() {
   // Show typing indicator
   typingIndicator.classList.add("visible");
 
-  // Add message to history
+  // Add user message to history (without HTML)
   chatHistory.push({ role: "user", content: message });
 
   try {
-    // Create new assistant response element
+    // Create new assistant message element
     const assistantMessageEl = document.createElement("div");
     assistantMessageEl.className = "message assistant-message";
     assistantMessageEl.innerHTML = "<p></p>";
     chatMessages.appendChild(assistantMessageEl);
-
-    // Scroll to bottom
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // Send request to API
+    // Send request to the backend API
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: {
@@ -116,7 +125,7 @@ async function sendMessage() {
       }
     }
 
-    // Add completed response to chat history
+    // Add assistant response to chat history
     chatHistory.push({ role: "assistant", content: responseText });
   } catch (error) {
     console.error("Error:", error);
@@ -137,17 +146,12 @@ async function sendMessage() {
 }
 
 /**
- * Helper function to add message to chat
+ * Helper function to add a message to the chat window
  */
 function addMessageToChat(role, content) {
   const messageEl = document.createElement("div");
   messageEl.className = `message ${role}-message`;
   messageEl.innerHTML = `<p>${content}</p>`;
   chatMessages.appendChild(messageEl);
-
-  // Scroll to bottom
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
-
-
-
