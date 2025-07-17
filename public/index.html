@@ -111,11 +111,16 @@
     }
 
     .typing-indicator {
+      display: none;
       padding-left: 1.5rem;
       margin-bottom: 0.75rem;
       color: var(--text-light);
       font-style: italic;
       font-size: 0.95rem;
+    }
+
+    .typing-indicator.visible {
+      display: block;
     }
 
     .message-input {
@@ -197,7 +202,7 @@
       </div>
     </div>
 
-    <div class="typing-indicator" id="typing-indicator" style="display:none;">
+    <div class="typing-indicator" id="typing-indicator">
       Nuro is thinking...
     </div>
 
