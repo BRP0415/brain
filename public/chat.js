@@ -43,7 +43,7 @@ sendButton.addEventListener("click", sendMessage);
 async function sendMessage() {
   const message = userInput.value.trim();
 
-  // Don't send empty messages
+  // Don't send empty messages or if already processing
   if (message === "" || isProcessing) return;
 
   // Disable input while processing
@@ -85,7 +85,6 @@ async function sendMessage() {
       }),
     });
 
-    // Handle errors
     if (!response.ok) {
       throw new Error("Failed to get response");
     }
@@ -98,24 +97,17 @@ async function sendMessage() {
     while (true) {
       const { done, value } = await reader.read();
 
-      if (done) {
-        break;
-      }
+      if (done) break;
 
-      // Decode chunk
       const chunk = decoder.decode(value, { stream: true });
 
-      // Process SSE format
       const lines = chunk.split("\n");
       for (const line of lines) {
         try {
           const jsonData = JSON.parse(line);
           if (jsonData.response) {
-            // Append new content to existing text
             responseText += jsonData.response;
             assistantMessageEl.querySelector("p").textContent = responseText;
-
-            // Scroll to bottom
             chatMessages.scrollTop = chatMessages.scrollHeight;
           }
         } catch (e) {
@@ -130,7 +122,7 @@ async function sendMessage() {
     console.error("Error:", error);
     addMessageToChat(
       "assistant",
-      "Sorry, there was an error processing your request.",
+      "Sorry, there was an error processing your request."
     );
   } finally {
     // Hide typing indicator
